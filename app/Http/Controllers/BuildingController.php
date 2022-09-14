@@ -9,32 +9,54 @@ class BuildingController extends Controller
 {
     public function index()
     {
-        $user = Building::all();
-        return $user;
+        $buildings = Building::all();
+        return $buildings;
     }
 
     public function show($id)
     {
-        $user = Building::find($id);
-        return $user;  
+        $building = Building::find($id);
+        return $building;  
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
     {
-        $user = Building::find($id);
-        return $user;
+        $building = Building::find($id);
+        $building->zip = $request->zip;
+        $building->neighborhood = $request->neighborhood;
+        $building->number = $request->number;
+        $building->complement = $request->complement;
+        $building->city = $request->city;
+        $building->state = $request->state;
+        $building->save();
+        
+        return response()->json([ "message" => "Predio atualizado com sucesso"], 201);
     }
 
     public function store(Request $request)
     {
-        $user = new Building();
-        return $user;
+        $building = new Building();
+        $building->name = $request->name;
+        $building->descricao = $request->descricao;
+        $building->user_id = $request->user_id;
+        $building->photos = $request->photos;
+        $building->zip = $request->zip;
+        $building->neighborhood = $request->neighborhood;
+        $building->number = $request->number;
+        $building->complement = $request->complement;
+        $building->city = $request->city;
+        $building->state = $request->state;
+        $building->url_google = $request->url_google;
+        $building->save();
+
+        return response()->json([ "message" => "Predio cadastrado com sucesso"], 200);
     }
 
     public function delete($id)
     {
-        $user = Building::find($id);
-        $user->delete();
-        return response()->json('Predio deletado com sucesso');
+        $building = Building::find($id);
+        $building->delete();
+
+        return response()->json([ "message" => "Predio deletado com sucesso"], 200);
     }
 }

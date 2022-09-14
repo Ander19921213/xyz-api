@@ -9,32 +9,41 @@ class TypeController extends Controller
 {
     public function index()
     {
-        $user = Type::all();
-        return $user;
+        $types = Type::all();
+        return $types;
     }
 
     public function show($id)
     {
-        $user = Type::find($id);
-        return $user;  
+        $type = Type::find($id);
+        return $type;  
     }
 
-    public function update($id)
+    public function update(Request $request, $id)
     {
-        $user = Type::find($id);
-        return $user;
+        $type = Type::find($id);
+        $type->name = $request->name;
+        $type->descricao = $request->descricao;
+        $type->save();
+
+        return response()->json([ "message" => "Tipo atualizado com sucesso"], 200);
     }
 
     public function store(Request $request)
     {
-        $user = new Type();
-        return $user;
+        $type = new Type();
+        $type->name = $request->name;
+        $type->descricao = $request->descricao;
+        $type->save();
+
+        return response()->json([ "message" => "Tipo criado com sucesso"], 201);
     }
 
     public function delete($id)
     {
-        $user = Type::find($id);
-        $user->delete();
-        return response()->json('Usuario deletado com sucesso');
+        $type = Type::find($id);
+        $type->delete();
+
+        return response()->json([ "message" => "Tipo deletado com sucesso"], 200);
     }
 }

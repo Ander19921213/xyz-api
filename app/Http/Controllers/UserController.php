@@ -37,7 +37,8 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->state = $request->state;
         $user->save();
-        return $user;
+
+        return response()->json([ "message" => "Usuario atualizado com sucesso"], 200);
     }
 
     public function store(UserRequest $request)
@@ -56,13 +57,15 @@ class UserController extends Controller
         $user->city = $request->city;
         $user->state = $request->state;
         $user->save();
-        return $user;
+
+        return response()->json([ "message" => "Usuario criado com sucesso"], 201);
     }
 
     public function delete($id)
     {
         $user = User::find($id);
         $user->delete();
-        return response()->json('Usuario deletado com sucesso');
+
+        return response()->json([ "message" => "Usuario deletado com sucesso"], 200);
     }
 }

@@ -9,32 +9,37 @@ class RoomController extends Controller
 {
     public function index()
     {
-        $user = Room::all();
-        return $user;
+        $rooms = Room::all();
+        return $rooms;
     }
 
     public function show($id)
     {
-        $user = Room::find($id);
-        return $user;  
+        $room = Room::find($id);
+        return $room;  
     }
 
     public function update($id)
     {
-        $user = Room::find($id);
-        return $user;
+        $room = Room::find($id);
+        $room->save();
+
+        return response()->json([ "message" => "Sala atualizada com sucesso"], 200);
     }
 
     public function store(Request $request)
     {
-        $user = new Room();
-        return $user;
+        $room = new Room();
+        $room->save();
+
+        return response()->json([ "message" => "Sala criada com sucesso"], 201);
     }
 
     public function delete($id)
     {
         $user = Room::find($id);
         $user->delete();
-        return response()->json('Sala deletada com sucesso');
+
+        return response()->json([ "message" => "Sala deletada com sucesso"], 200);
     }
 }
