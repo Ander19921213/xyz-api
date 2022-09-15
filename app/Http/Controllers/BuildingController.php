@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Building;
+use App\Models\Image;
+use Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class BuildingController extends Controller
 {
@@ -15,7 +18,7 @@ class BuildingController extends Controller
 
     public function show($id)
     {
-        $building = Building::find($id);
+        $building = Building::with(['user','rooms'])->where('id', $id)->get();
         return $building;  
     }
 
@@ -35,21 +38,37 @@ class BuildingController extends Controller
 
     public function store(Request $request)
     {
-        $building = new Building();
-        $building->name = $request->name;
-        $building->descricao = $request->descricao;
-        $building->user_id = $request->user_id;
-        $building->photos = $request->photos;
-        $building->zip = $request->zip;
-        $building->neighborhood = $request->neighborhood;
-        $building->number = $request->number;
-        $building->complement = $request->complement;
-        $building->city = $request->city;
-        $building->state = $request->state;
-        $building->url_google = $request->url_google;
-        $building->save();
-
-        return response()->json([ "message" => "Predio cadastrado com sucesso"], 200);
+        try {
+            $building = new Building();
+            $building->name = $request->name;
+            $building->descricao = $request->descricao;
+            $building->user_id = $request->user_id;
+            $building->zip = $request->zip;
+            $building->neighborhood = $request->neighborhood;
+            $building->number = $request->number;
+            $building->complement = $request->complement;
+            $building->city = $request->city;
+            $building->state = $request->state;
+            $building->url_google = $request->url_google;
+            $building->save();
+         
+            $files = $request->images;
+            foreach ($files as $val) {
+                $file = $val->store('public/images');
+                $file = Str::replace('public', '', $file);
+        
+                $image = new Image();
+                $image->type = 'building';
+                $image->external_id = $building->id;
+                $image->url = $file;
+                $image->save();
+            }
+            
+            return response()->json([ "message" => "Predio cadastrado com sucesso"], 200);
+        } catch (Exception $e) { 
+            return response()->json([ "message" => $e->getMessage() ], 500);
+        }
+      
     }
 
     public function delete($id)
