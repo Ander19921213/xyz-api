@@ -19,7 +19,7 @@ class RoomController extends Controller
     public function show($id)
     {
         $room = Room::find($id);
-        return $room;  
+        return $room;
     }
 
     public function update(Request $request, $id)
@@ -33,23 +33,12 @@ class RoomController extends Controller
             $room->amount = $request->amount;
             $room->save();
 
-            $files = $request->images;
-            foreach ($files as $val) {
-                $file = $val->store('public/images');
-                $file = Str::replace('public', '', $file);
-        
-                $image = new Image();
-                $image->type = 'room';
-                $image->external_id = $room->id;
-                $image->url = $file;
-                $image->save();
-            }
-    
-            return response()->json([ "message" => "Sala atualizada com sucesso"], 200);
-        } catch (Exception $e) {
-            return response()->json([ "message" => $e->getMessage() ], 500);
-        }
+            Image::storeImage($request, $id, 'room');
 
+            return response()->json(["message" => "Sala atualizada com sucesso"], 200);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage()], 500);
+        }
     }
 
     public function store(Request $request)
@@ -62,12 +51,13 @@ class RoomController extends Controller
             $room->type_id = $request->type_id;
             $room->amount = $request->amount;
             $room->save();
-            
-            return response()->json([ "message" => "Sala criada com sucesso"], 201);
-        } catch (Exception $e) { 
-            return response()->json([ "message" => $e->getMessage() ], 500);
+
+            Image::storeImage($request, $room->id, 'room');
+
+            return response()->json(["message" => "Sala criada com sucesso"], 201);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage()], 500);
         }
-   
     }
 
     public function delete($id)
@@ -75,6 +65,14 @@ class RoomController extends Controller
         $user = Room::find($id);
         $user->delete();
 
-        return response()->json([ "message" => "Sala deletada com sucesso"], 200);
+        return response()->json(["message" => "Sala deletada com sucesso"], 200);
+    }
+
+    public function deleteImage($id)
+    {
+        $image = Image::find($id);
+        $image->delete();
+
+        return response()->json(["message" => "Imagem removida com sucesso"], 200);
     }
 }

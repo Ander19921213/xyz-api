@@ -9,11 +9,14 @@ class Room extends Model
 {
     use HasFactory;
 
-    
+
     public function building()
     {
         return $this->belongsTo(Building::class);
     }
 
-   
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'external_id', 'id')->where('type', 'rooms');
+    }
 }

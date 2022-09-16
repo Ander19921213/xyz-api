@@ -9,10 +9,10 @@ class Building extends Model
 {
     use HasFactory;
 
-    
+
     public function user()
     {
-        return $this->hasOne(User::class, 'id' , 'user_id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
 
     public function rooms()
@@ -20,5 +20,8 @@ class Building extends Model
         return $this->hasMany(Room::class);
     }
 
-  
+    public function images()
+    {
+        return $this->hasMany(Image::class, 'external_id', 'id')->where('type', 'building');
+    }
 }

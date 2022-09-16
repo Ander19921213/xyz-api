@@ -12,14 +12,14 @@ class BuildingController extends Controller
 {
     public function index()
     {
-        $buildings = Building::all();
+        $buildings = Building::with(['user', 'rooms', 'images'])->get();
         return $buildings;
     }
 
     public function show($id)
     {
-        $building = Building::with(['user','rooms'])->where('id', $id)->get();
-        return $building;  
+        $building = Building::with(['user', 'rooms', 'images'])->where('id', $id)->get();
+        return $building;
     }
 
     public function update(Request $request, $id)
@@ -32,8 +32,10 @@ class BuildingController extends Controller
         $building->city = $request->city;
         $building->state = $request->state;
         $building->save();
-        
-        return response()->json([ "message" => "Predio atualizado com sucesso"], 201);
+
+        Image::storeImage($request, $id, 'building');
+
+        return response()->json(["message" => "Predio atualizado com sucesso"], 201);
     }
 
     public function store(Request $request)
@@ -51,24 +53,13 @@ class BuildingController extends Controller
             $building->state = $request->state;
             $building->url_google = $request->url_google;
             $building->save();
-         
-            $files = $request->images;
-            foreach ($files as $val) {
-                $file = $val->store('public/images');
-                $file = Str::replace('public', '', $file);
-        
-                $image = new Image();
-                $image->type = 'building';
-                $image->external_id = $building->id;
-                $image->url = $file;
-                $image->save();
-            }
-            
-            return response()->json([ "message" => "Predio cadastrado com sucesso"], 200);
-        } catch (Exception $e) { 
-            return response()->json([ "message" => $e->getMessage() ], 500);
+
+            Image::storeImage($request, $building->id, 'building');
+
+            return response()->json(["message" => "Predio cadastrado com sucesso"], 200);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage()], 500);
         }
-      
     }
 
     public function delete($id)
@@ -76,6 +67,14 @@ class BuildingController extends Controller
         $building = Building::find($id);
         $building->delete();
 
-        return response()->json([ "message" => "Predio deletado com sucesso"], 200);
+        return response()->json(["message" => "Predio deletado com sucesso"], 200);
+    }
+
+    public function deleteImage($id)
+    {
+        $image = Image::find($id);
+        $image->delete();
+
+        return response()->json(["message" => "Imagem removida com sucesso"], 200);
     }
 }
