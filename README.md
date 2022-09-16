@@ -4,7 +4,7 @@
 
 Clone the repository
 
-    git clone git@github.com:Ander19921213/xyz-api.git
+    git clone https://github.com/Ander19921213/xyz-api.git
 
 Switch to the repo folder
 
